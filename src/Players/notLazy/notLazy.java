@@ -1,18 +1,16 @@
 package Players.notLazy;
 
 import Interface.PlayerModulePart1;
+import Interface.PlayerModulePart2;
 import Interface.PlayerMove;
 import Interface.Coordinate;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Zung on 3/13/17.
  */
-public class notLazy implements PlayerModulePart1 {
+public class notLazy implements PlayerModulePart2 {
 
     private Node[][] board;
     private int playerId;
@@ -245,4 +243,14 @@ public class notLazy implements PlayerModulePart1 {
     public PlayerMove move() {
         return null;
     }
-}
+
+    @Override
+    public List allLegalMoves() {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public int fewestSegmentsToVictory(int i) {
+        return 0;
+    }
+    }
