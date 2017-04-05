@@ -245,7 +245,7 @@ public class notLazy implements PlayerModulePart2 {
     }
 
     @Override
-    public List allLegalMoves() {
+    public List<PlayerMove> allLegalMoves() {
         return new LinkedList<>();
     }
 
