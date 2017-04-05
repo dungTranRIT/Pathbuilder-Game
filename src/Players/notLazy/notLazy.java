@@ -80,7 +80,6 @@ public class notLazy implements PlayerModulePart2 {
         }
     }
 
-
     /**
      * Manipulate the board with recent move
      *
@@ -241,7 +240,8 @@ public class notLazy implements PlayerModulePart2 {
 
     }
     public PlayerMove move() {
-        return null;
+        List<PlayerMove> moveList = allLegalMoves();
+        return moveList.remove(0);
     }
 
     @Override
@@ -249,11 +249,11 @@ public class notLazy implements PlayerModulePart2 {
         ArrayList<PlayerMove> movelist = new ArrayList<>();
         for (int i=0; i<this.board.length; i++) {
             for (int j = 0; j < this.board[i].length; j++) {
-                if((i!=0) && (j!=0) && (i!=this.board.length-1) && (j!=this.board.length-1)){
+                if((i!=0) && (j!=0) && (i!=this.board.length-1) && (j!=this.board.length-1)) {
                     if (i % 2 + j % 2 != 1) {
-                        for(Edge edge : this.board[i][j-1].getEdges()){
-                            if (edge.getToNode() == this.board[i][j+1]){
-                                if(edge.getWeigh()== 1){
+                        for(Edge edge : this.board[i][j-1].getEdges()) {
+                            if (edge.getToNode() == this.board[i][j+1]) {
+                                if (edge.getWeigh()== 1) {
                                     Coordinate coord = new Coordinate(i,j);
                                     PlayerMove move = new PlayerMove(coord, this.playerId);
                                     movelist.add(move);
@@ -268,7 +268,7 @@ public class notLazy implements PlayerModulePart2 {
     }
 
     @Override
-    public int fewestSegmentsToVictory(int i) {
+    public int fewestSegmentsToVictory(int playerId) {
         return 0;
     }
     }
