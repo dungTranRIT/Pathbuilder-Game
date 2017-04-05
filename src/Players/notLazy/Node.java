@@ -48,6 +48,11 @@ public class Node {
         }
     }
 
+    /**
+     * Add a connected node to the node
+     *
+     * @param node
+     */
     public void addConnected(Node node) {
         if (!this.connected.contains(node)) {
             this.connected.add(node);
@@ -67,10 +72,20 @@ public class Node {
         return nodeList;
     }
 
+    /**
+     * Get all the edges of the node
+     *
+     * @return
+     */
     public Collection<Edge> getEdges() {
         return this.neighbors;
     }
 
+    /**
+     * Get all the connected nodes to the node
+     *
+     * @return
+     */
     public Collection<Node> getConnected() {
         return this.connected;
     }
