@@ -37,39 +37,30 @@ public class notLazy implements PlayerModulePart2 {
             for (int j=0; j<this.board[i].length; j++) {
                 if (i % 2 + j % 2 == 1) {
                     if (j == 0) {
-                        this.board[i][j].setDistance(0);
                         this.board[i][j].addNeighbor(this.board[i][j+2], 1);
                     } else if (i == 0) {
-                        this.board[i][j].setDistance(0);
                         this.board[i][j].addNeighbor(this.board[i+2][j], 1);
                     } else if (j == this.board.length-1) {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i][j-2], 1);
                     } else if (i == this.board.length-1) {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i-2][j], 1);
                     } else if (i == 1 && j != 0 && j != this.board.length-1) {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i][j-2], 1);
                         this.board[i][j].addNeighbor(this.board[i][j+2], 1);
                         this.board[i][j].addNeighbor(this.board[i+2][j],1);
                     } else if (i == this.board.length-2 && j != 0 && j != this.board.length-1) {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i][j-2], 1);
                         this.board[i][j].addNeighbor(this.board[i][j+2], 1);
                         this.board[i][j].addNeighbor(this.board[i-2][j], 1);
                     } else if (j == 1 && i != 0 && i != this.board.length-1) {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i-2][j], 1);
                         this.board[i][j].addNeighbor(this.board[i+2][j], 1);
                         this.board[i][j].addNeighbor(this.board[i][j+2], 1);
                     } else if (j == this.board.length-2 && i != 0 && i != this.board.length-1) {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i-2][j], 1);
                         this.board[i][j].addNeighbor(this.board[i+2][j], 1);
                         this.board[i][j].addNeighbor(this.board[i][j-2], 1);
                     } else {
-                        this.board[i][j].setDistance(Integer.MAX_VALUE);
                         this.board[i][j].addNeighbor(this.board[i-2][j], 1);
                         this.board[i][j].addNeighbor(this.board[i+2][j], 1);
                         this.board[i][j].addNeighbor(this.board[i][j-2], 1);
@@ -239,11 +230,22 @@ public class notLazy implements PlayerModulePart2 {
     public void otherPlayerInvalidated() {
 
     }
+
+    /**
+     * Get a valid player move
+     *
+     * @return a valid player move
+     */
     public PlayerMove move() {
         List<PlayerMove> moveList = allLegalMoves();
         return moveList.remove(0);
     }
 
+    /**
+     * Get a list of all the legal player moves
+     *
+     * @return a list of all valid player moves
+     */
     @Override
     public List<PlayerMove> allLegalMoves() {
         ArrayList<PlayerMove> movelist = new ArrayList<>();
@@ -267,6 +269,12 @@ public class notLazy implements PlayerModulePart2 {
         return movelist;
     }
 
+    /**
+     * Find out the fewest number of segments to victory
+     *
+     * @param playerId player id
+     * @return number of segments to win
+     */
     @Override
     public int fewestSegmentsToVictory(int playerId) {
         Map<Node, Integer> distance = new HashMap<>();
@@ -289,20 +297,21 @@ public class notLazy implements PlayerModulePart2 {
             }
         }
         dijkstra(startList, distance, predecessors, playerId);
-//        Node minNode = dequeueMin(finishList, distance);
-//        return distance.get(minNode);
-        for (Node node : finishList) {
-            System.out.println(distance.get(node));
-        }
-        System.out.println();
-        return 0;
+        Node minNode = dequeueMin(finishList, distance);
+        return distance.get(minNode);
     }
 
+    /**
+     * Dijkstra implementation to find the shortest path
+     *
+     * @param startList a list of start nodes
+     * @param distance a collection of distance values that nodes hold
+     * @param predecessors a collection of all nodes predecessors
+     * @param playerId player id
+     */
     private void dijkstra(ArrayList<Node> startList, Map<Node, Integer> distance,
                           Map<Node, Node> predecessors, int playerId) {
 
-        // initialize distances - we will use Integer.MAX_VALUE to
-        // represent infinity
         List<Node> priorityQ = new ArrayList<>();
 
         for (int i=0; i<this.board.length; i++) {
@@ -314,8 +323,7 @@ public class notLazy implements PlayerModulePart2 {
                             distance.put(this.board[i][j], Integer.MAX_VALUE);
                         }
                     }
-                }
-                if (playerId % 2 == 0) {
+                } else {
                     if (i % 2 == 0) {
                         if (j % 2 == 1) {
                             priorityQ.add(this.board[i][j]);
@@ -325,59 +333,46 @@ public class notLazy implements PlayerModulePart2 {
                 }
             }
         }
+
         for (Node startNode : startList) {
             distance.put(startNode, 0);
         }
-        // initialize predecessors - by not yet including any other nodes,
-        // they are unvisited and have no predecessor.  Source node is
-        // given predecessor of itself.
+
         for (Node startNode : startList) {
             predecessors.put(startNode, startNode);
         }
 
-        // our priority queue will just be a list that we search to extract
-        // the minimum from at each step (O(n))
-
-
-        // main loop
         while (!priorityQ.isEmpty()) {
             Node U = dequeueMin(priorityQ, distance);
 
-            // return if this node still has distance "infinity" -
-            // remaining nodes are inaccessible
             if(distance.get(U) == Integer.MAX_VALUE) {
                 return;
             }
-
-            // this loop allows neighbors that have already been finalized
-            // to be checked again, but they will never be updated and
-            // this doesn't affect overall complexity
             for(Edge edge : U.getEdges()) {
                 Integer weight = edge.getWeigh();
                 Node node = edge.getToNode();
-                // relaxation
-                System.out.println("U: " + distance.get(U));
-                Integer distViaU = distance.get(U) + weight;
-                System.out.println("weight: " + weight);
-                System.out.println("toNode before: " + distance.get(node));
-                if(distance.get(node) > distViaU) {
-                    distance.put(node,  distViaU);
-                    predecessors.put(node,  U);
+                if (weight != Integer.MAX_VALUE) {
+                    Integer distViaU = distance.get(U) + weight;
+                    if (distance.get(node) > distViaU) {
+                        distance.put(node, distViaU);
+                        predecessors.put(node, U);
+                    }
                 }
-                System.out.println("toNode after: " + distance.get(node));
-                System.out.println();
             }
         }
     }
 
-
-    /*
-     * Basic implementation of a priority queue that searches for the minimum.
+    /**
+     * Get the node with the minimum distance value
+     *
+     * @param priorityQ a list of all the nodes not having finalized yet
+     * @param distance a collection of distance values that all nodes hold
+     * @return the node with the minimum distance value
      */
     private Node dequeueMin(List<Node> priorityQ, Map<Node, Integer> distance) {
 
-        Node minNode = priorityQ.get(0);  // start off with first one
-        for (Node n : priorityQ) { // checks first one again...
+        Node minNode = priorityQ.get(0);
+        for (Node n : priorityQ) {
             if(distance.get(n) < distance.get(minNode)) {
                 minNode = n;
             }

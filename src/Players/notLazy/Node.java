@@ -12,7 +12,6 @@ import java.util.List;
 public class Node {
 
     private Coordinate coordinate;
-    private int distance;
     private List<Edge> neighbors;
     private List<Node> connected;
 
@@ -74,14 +73,6 @@ public class Node {
 
     public Collection<Node> getConnected() {
         return this.connected;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
-
-    public int getDistance() {
-        return this.distance;
     }
 
 }
