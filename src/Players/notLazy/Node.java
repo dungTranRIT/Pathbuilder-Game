@@ -80,5 +80,8 @@ public class Node {
         this.distance = distance;
     }
 
+    public int getDistance() {
+        return this.distance;
+    }
 
 }
