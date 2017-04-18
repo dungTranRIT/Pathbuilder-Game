@@ -1,19 +1,18 @@
 package Players.notLazy;
 
-import Interface.PlayerModulePart1;
-import Interface.PlayerModulePart2;
-import Interface.PlayerMove;
-import Interface.Coordinate;
+import Interface.*;
 
 import java.util.*;
 
 /**
  * Created by Zung on 3/13/17.
  */
-public class notLazy implements PlayerModulePart2 {
+public class notLazy implements PlayerModulePart3 {
 
     private Node[][] board;
     private int playerId;
+    private ArrayList<PlayerMove> playedList;
+    private notLazy config = this;
 
     /**
      * Initialize a player and create a new board
@@ -69,6 +68,7 @@ public class notLazy implements PlayerModulePart2 {
                 }
             }
         }
+        this.playedList = new ArrayList<>();
     }
 
     /**
@@ -173,6 +173,9 @@ public class notLazy implements PlayerModulePart2 {
                 }
             }
         }
+        if (!this.playedList.contains(m)) {
+            this.playedList.add(m);
+        }
     }
 
     /**
@@ -246,7 +249,6 @@ public class notLazy implements PlayerModulePart2 {
      *
      * @return a list of all valid player moves
      */
-    @Override
     public List<PlayerMove> allLegalMoves() {
         ArrayList<PlayerMove> movelist = new ArrayList<>();
         for (int i=0; i<this.board.length; i++) {
@@ -255,7 +257,7 @@ public class notLazy implements PlayerModulePart2 {
                     if (i % 2 + j % 2 != 1) {
                         for(Edge edge : this.board[i][j-1].getEdges()) {
                             if (edge.getToNode() == this.board[i][j+1]) {
-                                if (edge.getWeigh()== 1) {
+                                if (edge.getWeigh() == 1) {
                                     Coordinate coord = new Coordinate(i,j);
                                     PlayerMove move = new PlayerMove(coord, this.playerId);
                                     movelist.add(move);
@@ -275,7 +277,6 @@ public class notLazy implements PlayerModulePart2 {
      * @param playerId player id
      * @return number of segments to win
      */
-    @Override
     public int fewestSegmentsToVictory(int playerId) {
         Map<Node, Integer> distance = new HashMap<>();
         Map<Node, Node> predecessors = new HashMap<>();
@@ -379,4 +380,146 @@ public class notLazy implements PlayerModulePart2 {
         }
         return priorityQ.remove(priorityQ.indexOf(minNode));
     }
+
+    public boolean isWinnable(int playerId, int whoseTurn, int numMoves) {
+        System.out.println(config);
+        System.out.println(whoseTurn);
+        if (config.isGoal(playerId)) {
+            return true;
+        } else {
+            System.out.println("current numMoves: " + numMoves);
+            if (whoseTurn % 2 == 1) {
+                if (numMoves > 0) {
+                    ArrayList<notLazy> lst = config.getSuccessors(1);
+                    numMoves--;
+                    System.out.println("remaining numMoves: " + numMoves);
+                    System.out.println();
+                    for (notLazy child : lst) {
+                        if (child.isValid(numMoves, playerId)) {
+                            config = child;
+                            boolean sol = isWinnable(playerId, 2, numMoves);
+                            if (sol != false) {
+                                return sol;
+                            }
+                        }
+                    }
+                }
+                return false;
+            } else {
+                if (numMoves > 0) {
+                    ArrayList<notLazy> lst = config.getSuccessors(2);
+                    numMoves--;
+                    System.out.println("remaining numMoves: " + numMoves);
+                    System.out.println();
+                    for (notLazy child : lst) {
+                        if (child.isValid(numMoves, playerId)) {
+                            config = child;
+                            boolean sol = isWinnable(playerId, 1, numMoves);
+                            if (sol != false) {
+                                return sol;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+    }
+
+    public notLazy() {
+
+    }
+
+    private notLazy(notLazy other) {
+        this.playerId = other.playerId;
+        this.playedList = new ArrayList<>(other.playedList);
+        //System.out.println("other size " + other.playedList.size());
+        //System.out.println("this size " + this.playedList.size());
+        this.board = new Node[other.board.length][other.board.length];
+        for (int i=0; i<this.board.length; i++) {
+            for (int j=0; j<this.board[i].length; j++) {
+                if (i % 2 + j % 2 == 1) {
+                    Node newNode = new Node(other.board[i][j]);
+                    this.board[i][j] = newNode;
+                }
+            }
+        }
+        for (int i=0; i<this.board.length; i++) {
+            for (int j=0; j<this.board[i].length; j++) {
+                if (i % 2 + j % 2 == 1) {
+                    if (j == 0) {
+                        this.board[i][j].addNeighbor(this.board[i][j+2], 1);
+                    } else if (i == 0) {
+                        this.board[i][j].addNeighbor(this.board[i+2][j], 1);
+                    } else if (j == this.board.length-1) {
+                        this.board[i][j].addNeighbor(this.board[i][j-2], 1);
+                    } else if (i == this.board.length-1) {
+                        this.board[i][j].addNeighbor(this.board[i-2][j], 1);
+                    } else if (i == 1 && j != 0 && j != this.board.length-1) {
+                        this.board[i][j].addNeighbor(this.board[i][j-2], 1);
+                        this.board[i][j].addNeighbor(this.board[i][j+2], 1);
+                        this.board[i][j].addNeighbor(this.board[i+2][j],1);
+                    } else if (i == this.board.length-2 && j != 0 && j != this.board.length-1) {
+                        this.board[i][j].addNeighbor(this.board[i][j-2], 1);
+                        this.board[i][j].addNeighbor(this.board[i][j+2], 1);
+                        this.board[i][j].addNeighbor(this.board[i-2][j], 1);
+                    } else if (j == 1 && i != 0 && i != this.board.length-1) {
+                        this.board[i][j].addNeighbor(this.board[i-2][j], 1);
+                        this.board[i][j].addNeighbor(this.board[i+2][j], 1);
+                        this.board[i][j].addNeighbor(this.board[i][j+2], 1);
+                    } else if (j == this.board.length-2 && i != 0 && i != this.board.length-1) {
+                        this.board[i][j].addNeighbor(this.board[i-2][j], 1);
+                        this.board[i][j].addNeighbor(this.board[i+2][j], 1);
+                        this.board[i][j].addNeighbor(this.board[i][j-2], 1);
+                    } else {
+                        this.board[i][j].addNeighbor(this.board[i-2][j], 1);
+                        this.board[i][j].addNeighbor(this.board[i+2][j], 1);
+                        this.board[i][j].addNeighbor(this.board[i][j-2], 1);
+                        this.board[i][j].addNeighbor(this.board[i][j+2], 1);
+                    }
+                }
+            }
+        }
+        for (PlayerMove move : this.playedList) {
+            this.lastMove(move);
+        }
+    }
+
+    private ArrayList<notLazy> getSuccessors(int whoseTurn) {
+        ArrayList<notLazy> lst = new ArrayList<>();
+        for (PlayerMove move : config.allLegalMoves()) {
+            notLazy successor = new notLazy(config);
+            PlayerMove newMove = new PlayerMove(move.getCoordinate(), whoseTurn);
+            successor.lastMove(newMove);
+            //System.out.println("after played " + successor.playedList.size());
+            lst.add(successor);
+            //System.out.println();
+        }
+        System.out.println("list successors size: " + lst.size());
+        for (notLazy config : lst) {
+            System.out.println(config);
+        }
+        return lst;
+    }
+
+    private boolean isValid(int numMoves, int playerId) {
+        if (playerId % 2 == 1) {
+            if (numMoves >= 0 && !config.hasWonGame(2)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (numMoves >= 0 && !config.hasWonGame(1)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private boolean isGoal(int playerId) {
+        return config.hasWonGame(playerId);
+    }
+
 }

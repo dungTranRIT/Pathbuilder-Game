@@ -26,6 +26,12 @@ public class Node {
         this.connected = new ArrayList<Node>();
     }
 
+    protected Node(Node other) {
+        this.coordinate = other.coordinate;
+        this.neighbors = new ArrayList<Edge>();
+        this.connected = new ArrayList<Node>();
+    }
+
     /**
      * Get the coordinate of the node
      *
