@@ -382,46 +382,66 @@ public class notLazy implements PlayerModulePart3 {
     }
 
     public boolean isWinnable(int playerId, int whoseTurn, int numMoves) {
-        System.out.println(config);
-        System.out.println(whoseTurn);
-        if (config.isGoal(playerId)) {
-            return true;
-        } else {
-            System.out.println("current numMoves: " + numMoves);
-            if (whoseTurn % 2 == 1) {
-                if (numMoves > 0) {
-                    ArrayList<notLazy> lst = config.getSuccessors(1);
-                    numMoves--;
-                    System.out.println("remaining numMoves: " + numMoves);
-                    System.out.println();
-                    for (notLazy child : lst) {
-                        if (child.isValid(numMoves, playerId)) {
-                            config = child;
-                            boolean sol = isWinnable(playerId, 2, numMoves);
-                            if (sol != false) {
-                                return sol;
-                            }
-                        }
-                    }
-                }
-                return false;
+        if (whoseTurn == playerId) {
+            if (config.isGoal(playerId)) {
+                return true;
             } else {
                 if (numMoves > 0) {
-                    ArrayList<notLazy> lst = config.getSuccessors(2);
+                    ArrayList<notLazy> lst = config.getSuccessors(whoseTurn);
                     numMoves--;
-                    System.out.println("remaining numMoves: " + numMoves);
-                    System.out.println();
+                    if (whoseTurn % 2 == 1) {
+                        whoseTurn = 2;
+                    } else {
+                        whoseTurn = 1;
+                    }
                     for (notLazy child : lst) {
                         if (child.isValid(numMoves, playerId)) {
                             config = child;
-                            boolean sol = isWinnable(playerId, 1, numMoves);
+                            boolean sol = isWinnable(playerId, whoseTurn, numMoves);
                             if (sol != false) {
                                 return sol;
                             }
                         }
                     }
+                    return false;
+                } else {
+                    return false;
                 }
-                return false;
+            }
+        } else {
+            if (config.isGoal(playerId)) {
+                return true;
+            } else {
+                if (numMoves > 0) {
+                    ArrayList<notLazy> lst = config.getSuccessors(whoseTurn);
+                    numMoves--;
+                    int check = 0;
+                    if (whoseTurn % 2 == 1) {
+                        whoseTurn = 2;
+                    } else {
+                        whoseTurn = 1;
+                    }
+                    for (notLazy child : lst) {
+                        if (child.isValid(numMoves, playerId)) {
+                            config = child;
+                            boolean sol = isWinnable(playerId, whoseTurn, numMoves);
+                            if (sol == true) {
+                                check++;
+                            } else {
+                                break;
+                            }
+                        } else {
+                            return false;
+                        }
+                    }
+                    if (check == lst.size()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             }
         }
     }
@@ -433,8 +453,6 @@ public class notLazy implements PlayerModulePart3 {
     private notLazy(notLazy other) {
         this.playerId = other.playerId;
         this.playedList = new ArrayList<>(other.playedList);
-        //System.out.println("other size " + other.playedList.size());
-        //System.out.println("this size " + this.playedList.size());
         this.board = new Node[other.board.length][other.board.length];
         for (int i=0; i<this.board.length; i++) {
             for (int j=0; j<this.board[i].length; j++) {
@@ -491,13 +509,7 @@ public class notLazy implements PlayerModulePart3 {
             notLazy successor = new notLazy(config);
             PlayerMove newMove = new PlayerMove(move.getCoordinate(), whoseTurn);
             successor.lastMove(newMove);
-            //System.out.println("after played " + successor.playedList.size());
             lst.add(successor);
-            //System.out.println();
-        }
-        System.out.println("list successors size: " + lst.size());
-        for (notLazy config : lst) {
-            System.out.println(config);
         }
         return lst;
     }
