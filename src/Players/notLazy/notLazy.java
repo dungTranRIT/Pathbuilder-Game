@@ -381,6 +381,17 @@ public class notLazy implements PlayerModulePart3 {
         return priorityQ.remove(priorityQ.indexOf(minNode));
     }
 
+    /**
+     * Part 3 task that computes whether the given player is guaranteed with optimal strategy to have won the
+     * game in no more than the given number of total moves, also given whose turn it is currently
+     * PRECONDITION: you may assume that numMoves is non-negative
+     * @param playerId Player to determine winnable status
+     * @param whoseTurn Player whose turn it is currently
+     * @param numMoves num of total moves by which the player of interest must be able to guarantee victory to
+     *                 satisfy the requirement to return a value of true
+     * @return Boolean indicating whether it is possible for the indicated player to guarantee a win after the
+     *         specified number of total moves.
+     */
     public boolean isWinnable(int playerId, int whoseTurn, int numMoves) {
         if (whoseTurn == playerId) {
             if (config.isGoal(playerId)) {
@@ -450,6 +461,10 @@ public class notLazy implements PlayerModulePart3 {
 
     }
 
+    /**
+     * Creates a clone of the player's board to be tested
+     * @param other the config that needs to be copied
+     */
     private notLazy(notLazy other) {
         this.playerId = other.playerId;
         this.playedList = new ArrayList<>(other.playedList);
@@ -503,6 +518,11 @@ public class notLazy implements PlayerModulePart3 {
         }
     }
 
+    /**
+     * Get the collection of successors from the current one
+     * @param whoseTurn the playerId to determine which player to get the successors for
+     * @return All successors
+     */
     private ArrayList<notLazy> getSuccessors(int whoseTurn) {
         ArrayList<notLazy> lst = new ArrayList<>();
         for (PlayerMove move : config.allLegalMoves()) {
@@ -514,6 +534,12 @@ public class notLazy implements PlayerModulePart3 {
         return lst;
     }
 
+    /**
+     * Determines if the current configuration is valid
+     * @param numMoves the number of current moves the board has to find a solution
+     * @param playerId the id of the player that needs to be checked
+     * @return true if valid and false otherwise
+     */
     private boolean isValid(int numMoves, int playerId) {
         if (playerId % 2 == 1) {
             if (numMoves >= 0 && !config.hasWonGame(2)) {
@@ -530,6 +556,11 @@ public class notLazy implements PlayerModulePart3 {
         }
     }
 
+    /**
+     * Determines if the current config is the goal
+     * @param playerId the id of the player that needs to be checked
+     * @return true if its the goal and false otherwise
+     */
     private boolean isGoal(int playerId) {
         return config.hasWonGame(playerId);
     }
