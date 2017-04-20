@@ -406,7 +406,7 @@ public class notLazy implements PlayerModulePart3 {
                         whoseTurn = 1;
                     }
                     for (notLazy child : lst) {
-                        if (child.isValid(numMoves, playerId)) {
+                        if (child.isValid(playerId)) {
                             config = child;
                             boolean sol = isWinnable(playerId, whoseTurn, numMoves);
                             if (sol != false) {
@@ -433,7 +433,7 @@ public class notLazy implements PlayerModulePart3 {
                         whoseTurn = 1;
                     }
                     for (notLazy child : lst) {
-                        if (child.isValid(numMoves, playerId)) {
+                        if (child.isValid(playerId)) {
                             config = child;
                             boolean sol = isWinnable(playerId, whoseTurn, numMoves);
                             if (sol == true) {
@@ -536,11 +536,10 @@ public class notLazy implements PlayerModulePart3 {
 
     /**
      * Determines if the current configuration is valid
-     * @param numMoves the number of current moves the board has to find a solution
      * @param playerId the id of the player that needs to be checked
      * @return true if valid and false otherwise
      */
-    private boolean isValid(int numMoves, int playerId) {
+    private boolean isValid(int playerId) {
         if (playerId % 2 == 1) {
             if (!config.hasWonGame(2)) {
                 return true;
