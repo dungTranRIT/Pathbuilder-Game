@@ -26,6 +26,11 @@ public class Node {
         this.connected = new ArrayList<Node>();
     }
 
+    /**
+     * Copy constructor of a new node
+     *
+     * @param other other node
+     */
     protected Node(Node other) {
         this.coordinate = other.coordinate;
         this.neighbors = new ArrayList<Edge>();

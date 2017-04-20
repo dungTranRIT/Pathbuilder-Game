@@ -542,13 +542,13 @@ public class notLazy implements PlayerModulePart3 {
      */
     private boolean isValid(int numMoves, int playerId) {
         if (playerId % 2 == 1) {
-            if (numMoves >= 0 && !config.hasWonGame(2)) {
+            if (!config.hasWonGame(2)) {
                 return true;
             } else {
                 return false;
             }
         } else {
-            if (numMoves >= 0 && !config.hasWonGame(1)) {
+            if (!config.hasWonGame(1)) {
                 return true;
             } else {
                 return false;
