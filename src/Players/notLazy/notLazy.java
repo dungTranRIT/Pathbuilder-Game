@@ -11,8 +11,12 @@ public class notLazy implements PlayerModule {
 
     private Node[][] board;
     private int playerId;
+    private int otherId;
     private ArrayList<PlayerMove> playedList;
     private notLazy config = this;
+    private PlayerMove bestMove;
+    private int currFewMe;
+    private int currFewOther;
 
     /**
      * Initialize a player and create a new board
@@ -23,6 +27,11 @@ public class notLazy implements PlayerModule {
     public void initPlayer(int dim, int playerId) {
         this.board = new Node[2*dim+1][2*dim+1];
         this.playerId = playerId;
+        if (playerId % 2 == 1) {
+            this.otherId = 2;
+        } else {
+            this.otherId = 1;
+        }
         for (int i=0; i<this.board.length; i++) {
             for (int j=0; j<this.board[i].length; j++) {
                 if (i % 2 + j % 2 == 1) {
@@ -241,7 +250,42 @@ public class notLazy implements PlayerModule {
      */
     public PlayerMove move() {
         List<PlayerMove> moveList = allLegalMoves();
-        return moveList.remove(0);
+        this.bestMove = moveList.get(0);
+        lastMove(bestMove);
+        this.currFewMe = fewestSegmentsToVictory(this.playerId);
+        this.currFewOther = fewestSegmentsToVictory(this.otherId);
+        undoMove(bestMove);
+        for (PlayerMove playerMove : moveList) {
+            lastMove(playerMove);
+            int newMe = fewestSegmentsToVictory(this.playerId);
+            int newOther = fewestSegmentsToVictory(this.otherId);
+            int incToVic = this.currFewMe - newMe;
+            int decToVic = newOther - this.currFewOther;
+            if (newOther > 1) {
+               if (incToVic > 0 && decToVic > 0) {
+                   this.bestMove = playerMove;
+                   this.currFewMe = newMe;
+                   this.currFewOther = newOther;
+               }else if (incToVic > 0 && decToVic == 0){
+                   this.bestMove = playerMove;
+                   this.currFewMe = newMe;
+                   this.currFewOther = newOther;
+               }else if (incToVic == 0 && decToVic > 0){
+                   this.bestMove = playerMove;
+                   this.currFewMe = newMe;
+                   this.currFewOther = newOther;
+               }else if (incToVic > 0 && decToVic < 0 && Math.abs(decToVic) < Math.abs(incToVic)){
+                   this.bestMove = playerMove;
+                   this.currFewMe = newMe;
+                   this.currFewOther = newOther;
+               }else if (incToVic < 0 && decToVic > 0 && Math.abs(decToVic) > Math.abs(incToVic)){
+                   this.bestMove = playerMove;
+                   this.currFewMe = newMe;
+                   this.currFewOther = newOther;
+               }
+            }
+        }
+        return this.bestMove;
     }
 
     /**
