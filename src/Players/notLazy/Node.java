@@ -70,6 +70,12 @@ public class Node {
         }
     }
 
+    public void removeConnected(Node node) {
+        if (this.connected.contains(node)) {
+            this.connected.remove(node);
+        }
+    }
+
     /**
      * Get all the neighbors of a node
      *

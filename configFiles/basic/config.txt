@@ -25,7 +25,7 @@ DIM 7
 # is created.  The initPlayer function is responsible
 # for resetting all player information necessary to
 # play multiple games.
-GAMES 1
+GAMES 9
 
 # PLAYERS is used to indicate the players for the game.
 # It must be followed by two names that are separated
@@ -39,7 +39,7 @@ GAMES 1
 # Valid choices for AI players include:
 # CARELESS, RANDOM, DEFENSIVE, OKPLAYER, GOODPLAYER, TOUGHPLAYER
 # as well as any module you create to play the game.
-PLAYERS HUMAN,RANDOM
+PLAYERS notLazy,OKPLAYER
 
 # TIMELIMIT is used to restrict player module computation.
 # It must be an integer in the range 1-100.

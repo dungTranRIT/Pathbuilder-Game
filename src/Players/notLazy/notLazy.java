@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by Zung on 3/13/17.
  */
-public class notLazy implements PlayerModulePart3 {
+public class notLazy implements PlayerModule {
 
     private Node[][] board;
     private int playerId;
@@ -562,6 +562,110 @@ public class notLazy implements PlayerModulePart3 {
      */
     private boolean isGoal(int playerId) {
         return config.hasWonGame(playerId);
+    }
+
+    /**
+     * Undo a played move
+     *
+     * @param m a played move to be undone
+     */
+    private void undoMove(PlayerMove m) {
+        int row = m.getCoordinate().getRow();
+        int col = m.getCoordinate().getCol();
+        int playerId = m.getPlayerId();
+        if (playerId % 2 == 1 && row % 2 == 1) {
+            this.board[row][col-1].removeConnected(this.board[row][col+1]);
+            this.board[row][col+1].removeConnected(this.board[row][col-1]);
+            for (Edge edge : this.board[row][col-1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col+1]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row][col+1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col-1]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row-1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row+1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row+1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row-1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+        } else if (playerId % 2 == 1 && row % 2 == 0) {
+            this.board[row-1][col].removeConnected(this.board[row+1][col]);
+            this.board[row+1][col].removeConnected(this.board[row-1][col]);
+            for (Edge edge : this.board[row-1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row+1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row+1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row-1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row][col-1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col+1]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row][col+1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col-1]) {
+                    edge.setWeigh(1);
+                }
+            }
+        } else if (playerId % 2 == 0 && row % 2 == 1) {
+            this.board[row-1][col].removeConnected(this.board[row+1][col]);
+            this.board[row+1][col].removeConnected(this.board[row-1][col]);
+            for (Edge edge : this.board[row-1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row+1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row+1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row-1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row][col-1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col+1]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row][col+1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col-1]) {
+                    edge.setWeigh(1);
+                }
+            }
+        } else {
+            this.board[row][col-1].removeConnected(this.board[row][col+1]);
+            this.board[row][col+1].removeConnected(this.board[row][col-1]);
+            for (Edge edge : this.board[row][col-1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col+1]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row][col+1].getEdges()) {
+                if (edge.getToNode() == this.board[row][col-1]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row-1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row+1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+            for (Edge edge : this.board[row+1][col].getEdges()) {
+                if (edge.getToNode() == this.board[row-1][col]) {
+                    edge.setWeigh(1);
+                }
+            }
+        }
     }
 
 }
