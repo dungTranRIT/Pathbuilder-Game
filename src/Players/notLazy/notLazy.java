@@ -284,6 +284,7 @@ public class notLazy implements PlayerModule {
                    this.currFewOther = newOther;
                }
             }
+            undoMove(playerMove);
         }
         return this.bestMove;
     }
